@@ -55,19 +55,25 @@ export function App() {
   useEffect(() => {
     ensureDayPlan(getLocalDateKey());
 
-    const pairedConfig = parsePairingHash(window.location.hash);
-    if (pairedConfig) {
-      updateSettings({ supabaseConfig: pairedConfig });
-      window.history.replaceState(
-        null,
-        '',
-        window.location.pathname + window.location.search
-      );
-      setActiveTab('settings');
-      setPairedBanner(
-        'Cloud Sync paired from QR/Link! Sign in below with your email & password to sync your devices.'
-      );
-    }
+    const applyPairingHash = () => {
+      const pairedConfig = parsePairingHash(window.location.hash);
+      if (pairedConfig) {
+        updateSettings({ supabaseConfig: pairedConfig });
+        window.history.replaceState(
+          null,
+          '',
+          window.location.pathname + window.location.search
+        );
+        setActiveTab('settings');
+        setPairedBanner(
+          'Cloud Sync paired from QR/Link! Sign in below with your email & password to sync your devices.'
+        );
+      }
+    };
+
+    applyPairingHash();
+    window.addEventListener('hashchange', applyPairingHash);
+    return () => window.removeEventListener('hashchange', applyPairingHash);
   }, [ensureDayPlan, updateSettings]);
 
   // Apply theme class (theme-noir / theme-reload / theme-washi) to <html>
